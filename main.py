@@ -1,9 +1,21 @@
+
 from games.tictactoe import TicTacToe
+from utils import prompts
+from utils.menus import mode_menu, diff_menu
+from bots.tictactoebots import TripleTeeBot
 
 if __name__ == "__main__":
-    size = int(input("Enter the size of the board you want to play on: "))
-    piece_zero = input("Player zero, enter the piece you want to play with (any one character): ")
-    piece_one = input("Player one, enter the piece you want to play with: ")
+
+    mode = mode_menu.show()
+
+    if mode == 1:
+        diff_level = diff_menu.show()
+        bot = TripleTeeBot(diff_level)
+        exit()
+
+    size = int(input(prompts.board_size))
+    piece_zero = input(prompts.piece_zero)
+    piece_one = input(prompts.piece_one)
     game = TicTacToe(piece_zero, piece_one, size)
 
     while not game.check_win():
@@ -12,8 +24,8 @@ if __name__ == "__main__":
         pos = input(f"Player {game.current}'s turn: ")
         pos = tuple(map(int, pos.split(" ")))
 
-        print(game.make_move(pos))
+        result = game.make_move(pos)
+        print(result)
     
     game.print_board()
-    print(f"Player {game.current} wins!")
         

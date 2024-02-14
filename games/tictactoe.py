@@ -8,6 +8,10 @@ class TicTacToe():
 
     def check_win(self):
 
+        if self.is_full():
+            print("The game is a tie!")
+            return True
+        
         sum_rows = [0] * self.size
         sum_cols = [0] * self.size
         sum_diagonals = [0, 0]
@@ -23,14 +27,25 @@ class TicTacToe():
                         sum_diagonals[1] += 1
 
         if sum_diagonals[0] == self.size or sum_diagonals[1] == self.size:
+            print(f"Player {self.current} wins!")
             return True
         
         for i in range(self.size):
             if sum_cols[i] == self.size or sum_rows[i] == self.size:
+                print(f"Player {self.current} wins!")
                 return True
 
         self.current = (self.current + 1) % 2
         return False
+    
+    def is_full(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.board[i][j] == " ":
+                    return False
+
+        return True
+
 
     def make_move(self, pos):
 
