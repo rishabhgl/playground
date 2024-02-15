@@ -10,8 +10,18 @@ class TicTacToe():
         self.prev = 1
         self.move_count = 0
 
-    def check_win(self, simulation = False):
 
+    def change_player(self, restore = False):
+        if restore:
+            self.current = restore
+            self.prev = (self.current + 1) % 2
+            return
+        
+        self.prev = self.current
+        self.current = (self.current + 1) % 2
+
+        
+    def check_win(self, simulation = False):
         player = self.prev
         
         if simulation:
@@ -46,6 +56,7 @@ class TicTacToe():
         
         return False
     
+
     def is_full(self):
         for i in range(self.size):
             for j in range(self.size):
@@ -62,15 +73,13 @@ class TicTacToe():
             self.board[pos[0]][pos[1]] = self.player_pieces[self.current]
             if not simulation:
                 self.move_count += 1
-                self.prev = self.current
-                self.current = (self.current + 1) % 2
+                self.change_player()
             return ""
         else:
             return "Invalid move! Try again~"
         
+
     def winning_move(self, moves):
-        
-        if self.move_count < 4 and self.size > 2: return False
 
         BOARD = self.board
 
@@ -84,7 +93,27 @@ class TicTacToe():
             self.board = BOARD
 
         return False
+    
+
+    def block_opponent(self, moves):
+        BOARD = self.board
+        CURRENT = self.current
+
+        for move in moves:
+            state = copy.deepcopy(BOARD)
+            self.board = state
+            self.make_move(move, simulation= True)
+            self.change_player()
+            opp_moves = self.available_moves()
+            opp_win = self.winning_move(opp_moves)
+            if opp_win:
+                moves = [new_move for new_move in moves if new_move is not move]
+            self.change_player(restore = CURRENT)
+            self.board = BOARD
+
+        return moves
         
+
     def available_moves(self):
         moves = []
 
@@ -95,6 +124,7 @@ class TicTacToe():
 
         return moves
             
+
     def print_board(self):
         border = "---" * self.size
         for i in range(self.size):

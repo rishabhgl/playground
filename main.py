@@ -10,7 +10,6 @@ if __name__ == "__main__":
     if mode == 1:
         diff_level = diff_menu.show()
         bot = TripleTeeBot(diff_level)
-        exit()
 
     size = int(input(prompts.board_size))
     piece_zero = input(prompts.piece_zero)
@@ -24,8 +23,18 @@ if __name__ == "__main__":
         pos = tuple(map(int, pos.split(" ")))
 
         result = game.make_move(pos)
-        
         print(result)
-    
+        game.print_board()
+
+        if mode == 1:
+            if game.check_win(): break
+
+            print(prompts.bot)
+            move = bot.select(game)
+            game.make_move(move)
+
+            
+
+
     game.print_board()
         
