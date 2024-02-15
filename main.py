@@ -1,4 +1,3 @@
-
 from games.tictactoe import TicTacToe
 from utils import prompts
 from utils.menus import mode_menu, diff_menu
@@ -25,6 +24,7 @@ if __name__ == "__main__":
         pos = tuple(map(int, pos.split(" ")))
 
         result = game.make_move(pos)
+        
         print(result)
     
     game.print_board()

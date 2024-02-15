@@ -1,16 +1,21 @@
+import copy
+
 class TicTacToe():
 
     def __init__(self, piece_one = "O", piece_two = "X", size = 3):
         self.size = size
         self.board = [[" "] * size for i in range(size)]
         self.player_pieces = (piece_one, piece_two)
-        self.current = 1
+        self.current = 0
+        self.prev = 1
+        self.move_count = 0
 
-    def check_win(self):
+    def check_win(self, simulation = False):
 
-        if self.is_full():
-            print("The game is a tie!")
-            return True
+        player = self.prev
+        
+        if simulation:
+            player = self.current
         
         sum_rows = [0] * self.size
         sum_cols = [0] * self.size
@@ -18,7 +23,7 @@ class TicTacToe():
 
         for i in range(self.size):
             for j in range(self.size):  
-                if self.board[i][j] == self.player_pieces[self.current]:
+                if self.board[i][j] == self.player_pieces[player]:
                     sum_rows[i] += 1
                     sum_cols[j] += 1
                     if i == j:
@@ -27,15 +32,18 @@ class TicTacToe():
                         sum_diagonals[1] += 1
 
         if sum_diagonals[0] == self.size or sum_diagonals[1] == self.size:
-            print(f"Player {self.current} wins!")
+            if not simulation: print(f"Player {player} wins!")
             return True
         
         for i in range(self.size):
             if sum_cols[i] == self.size or sum_rows[i] == self.size:
-                print(f"Player {self.current} wins!")
+                if not simulation: print(f"Player {player} wins!")
                 return True
-
-        self.current = (self.current + 1) % 2
+            
+        if self.is_full():
+            if not simulation: print("The game is a tie!")
+            return True
+        
         return False
     
     def is_full(self):
@@ -47,15 +55,45 @@ class TicTacToe():
         return True
 
 
-    def make_move(self, pos):
+    def make_move(self, pos, simulation = False):
 
         out_of_bounds = pos[0] >= self.size or pos[0] < 0 or pos[1] >= self.size or pos[1] < 0
         if not out_of_bounds and self.board[pos[0]][pos[1]] == " ":
             self.board[pos[0]][pos[1]] = self.player_pieces[self.current]
+            if not simulation:
+                self.move_count += 1
+                self.prev = self.current
+                self.current = (self.current + 1) % 2
             return ""
         else:
-            self.current = (self.current + 1) % 2
             return "Invalid move! Try again~"
+        
+    def winning_move(self, moves):
+        
+        if self.move_count < 4 and self.size > 2: return False
+
+        BOARD = self.board
+
+        for move in moves:
+            state = copy.deepcopy(BOARD)
+            self.board = state
+            self.make_move(move, simulation= True)
+            if self.check_win(simulation=True):
+                self.board = BOARD
+                return move
+            self.board = BOARD
+
+        return False
+        
+    def available_moves(self):
+        moves = []
+
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.board[i][j] == " ":
+                    moves += [(i, j)]
+
+        return moves
             
     def print_board(self):
         border = "---" * self.size
